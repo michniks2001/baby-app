@@ -1,8 +1,15 @@
+'use client'; 
+
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import { TextToSpeech } from "@/components/TextToSpeech";
+import { Button } from "@/components/ui/button"; 
 
 export default function Home() {
+  const router = useRouter(); 
+
+  const handleStartClick = () => {
+    router.push('/game'); 
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-blue-200 to-blue-100 p-8 text-center font-sans">
       
@@ -37,7 +44,7 @@ export default function Home() {
 
       <Button 
         size="lg" 
-        className="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 font-bold text-xl px-10 py-7 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 mb-8"
+        className="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 font-bold text-xl px-10 py-7 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
       >
         Start Playing!
       </Button>
