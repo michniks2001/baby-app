@@ -1,5 +1,6 @@
 import Image from "next/image";
-import { Button } from "@/components/ui/button"; 
+import { Button } from "@/components/ui/button";
+import { TextToSpeech } from "@/components/TextToSpeech";
 
 export default function Home() {
   return (
@@ -36,10 +37,15 @@ export default function Home() {
 
       <Button 
         size="lg" 
-        className="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 font-bold text-xl px-10 py-7 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+        className="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 font-bold text-xl px-10 py-7 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 mb-8"
       >
         Start Playing!
       </Button>
+
+      {/* Text to Speech Section */}
+      <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg p-6">
+        <TextToSpeech />
+      </div>
 
     </div>
   );
