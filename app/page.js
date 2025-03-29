@@ -60,7 +60,7 @@ export default function Home() {
       <div className="flex flex-col sm:flex-row gap-6 mb-10 relative z-10">
         <Button 
           size="lg" 
-          className="bg-yellow-400 hover:bg-yellow-500 active:bg-yellow-600 text-yellow-900 font-bold text-xl px-10 py-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 active:scale-95 min-w-[200px] min-h-[80px] touch-manipulation"
+          className="bg-yellow-400 hover:bg-yellow-500 active:bg-yellow-600 text-yellow-900 font-bold text-xl px-10 py-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 active:scale-95 min-w-[200px] min-h-[80px] touch-manipulation ripple"
           onClick={handleAnimalGameClick}
         >
           Play Animal Game
@@ -68,7 +68,7 @@ export default function Home() {
 
         <Button 
           size="lg" 
-          className="bg-purple-400 hover:bg-purple-500 active:bg-purple-600 text-purple-900 font-bold text-xl px-10 py-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 active:scale-95 min-w-[200px] min-h-[80px] touch-manipulation"
+          className="bg-purple-400 hover:bg-purple-500 active:bg-purple-600 text-purple-900 font-bold text-xl px-10 py-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 active:scale-95 min-w-[200px] min-h-[80px] touch-manipulation ripple"
           onClick={handleShapesGameClick}
         >
           Play Shapes Game

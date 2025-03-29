@@ -125,7 +125,7 @@ export default function GamePage() {
 
   // --- Render ---
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-green-300 to-green-100 p-4 overflow-hidden touch-manipulation relative">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-green-300 to-green-100 p-4 overflow-hidden touch-manipulation relative dynamic-container">
       {/* Decorative background elements - animal-themed */}
       <div className="absolute top-10 left-10 w-16 h-16 bg-yellow-200 rounded-full opacity-60 flex items-center justify-center animate-wobble">
         <span className="text-2xl">🐰</span>
@@ -140,13 +140,13 @@ export default function GamePage() {
         <span className="text-2xl">🐮</span>
       </div>
       {/* Game Header */}
-      <div className="w-full max-w-md flex justify-between mb-8 p-5 bg-white/70 rounded-xl shadow-md backdrop-blur-sm border-2 border-green-200 z-10">
+      <div className="w-full max-w-md flex justify-between mb-8 p-5 bg-white/70 rounded-xl shadow-md backdrop-blur-sm border-2 border-green-200 z-10 dynamic-scale">
         <span className="text-green-800 font-bold text-xl sm:text-2xl">Level: {Math.min(level, MAX_LEVEL)}/{MAX_LEVEL}</span>
         <span className="text-yellow-800 font-bold text-xl sm:text-2xl">Score: {score}</span>
       </div>
 
       {/* Game States */}
-      <div className="w-full max-w-md flex flex-col items-center">
+      <div className="w-full max-w-md flex flex-col items-center dynamic-scale">
         {gameState === 'loading' && (
           <p className="text-gray-600 animate-pulse">Loading...</p>
         )}
@@ -158,8 +158,9 @@ export default function GamePage() {
               <Image
                 src={`/animal_images/${correctAnimal}.jpg`}
                 alt={correctAnimal}
-                width={320}
-                height={320}
+                width={280}
+                height={280}
+                sizes="(max-width: 640px) 240px, 280px"
                 className="object-cover rounded-lg"
                 priority
               />
@@ -171,19 +172,20 @@ export default function GamePage() {
         {gameState === 'quiz' && (
           <div className="text-center">
             <h2 className="text-blue-700 text-2xl mb-6 animate-fadeIn text-shadow">Which animal was it?</h2>
-            <div className={`grid gap-8 ${quizOptions.length === 3 ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-1 sm:grid-cols-2'}`}>
+            <div className={`grid gap-4 sm:gap-8 ${quizOptions.length === 3 ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-2 sm:grid-cols-2'}`}>
               {quizOptions.map((animal, index) => (
                 <button
                   key={animal}
                   onClick={() => handleSelection(animal)}
-                  className="bg-white p-4 rounded-xl shadow-md hover:shadow-xl active:shadow-inner transition-all duration-300 transform hover:scale-110 active:scale-95 hover:rotate-2 animate-fadeIn min-h-[120px] touch-manipulation"
+                  className="bg-white p-3 sm:p-4 rounded-xl shadow-md hover:shadow-xl active:shadow-inner transition-all duration-300 transform hover:scale-110 active:scale-95 hover:rotate-2 animate-fadeIn min-h-[100px] sm:min-h-[120px] touch-manipulation ripple answer-ripple"
                   style={{ animationDelay: `${index * 150}ms` }}
                 >
                   <Image
                     src={`/animal_images/${animal}.jpg`}
                     alt={animal}
-                    width={180}
-                    height={180}
+                    width={160}
+                    height={160}
+                    sizes="(max-width: 640px) 140px, 180px"
                     className="object-cover rounded-lg"
                   />
                 </button>
@@ -221,14 +223,14 @@ export default function GamePage() {
             <div className="flex gap-6 justify-center">
               <Button 
                 onClick={restart} 
-                className="bg-green-500 hover:bg-green-600 active:bg-green-700 text-white text-lg px-8 py-5 rounded-full transform transition-all duration-300 hover:scale-110 active:scale-95 min-w-[180px] min-h-[70px] touch-manipulation"
+                className="bg-green-500 hover:bg-green-600 active:bg-green-700 text-white text-lg px-8 py-5 rounded-full transform transition-all duration-300 hover:scale-110 active:scale-95 min-w-[180px] min-h-[70px] touch-manipulation ripple"
               >
                 Play Again
               </Button>
               <Button 
                 variant="outline" 
                 onClick={() => router.push('/')} 
-                className="text-lg px-8 py-5 rounded-full transform transition-all duration-300 hover:scale-110 active:scale-95 min-w-[180px] min-h-[70px] touch-manipulation"
+                className="text-lg px-8 py-5 rounded-full transform transition-all duration-300 hover:scale-110 active:scale-95 min-w-[180px] min-h-[70px] touch-manipulation ripple"
               >
                 Main Menu
               </Button>

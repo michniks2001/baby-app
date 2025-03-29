@@ -32,8 +32,11 @@ export default function ShapesGamePage() {
   const [resultMessage, setResultMessage] = useState('');
   const [usedShapes, setUsedShapes] = useState([]);
 
-  // --- Text-to-Speech Function ---
-  const speakShapeName = (shape) => {
+  // --- State for Text-to-Speech ---
+  const [isSpeaking, setIsSpeaking] = useState(false);
+
+  // --- Text-to-Speech Function using Browser's Built-in Speech Synthesis ---
+  const speakShapeName = async (shape) => {
     if (typeof window === 'undefined') return;
     
     // Cancel any ongoing speech first
@@ -42,17 +45,39 @@ export default function ShapesGamePage() {
     }
 
     const fullText = `This is a ${shape}`;
+    console.log('🔊 Speaking:', fullText);
     
-    // Create a fresh utterance each time
-    const utterance = new window.SpeechSynthesisUtterance(fullText);
-    
-    // Configure speech settings
-    utterance.rate = 0.7; // Slightly slower for better comprehension
-    utterance.pitch = 1;
-    utterance.volume = 1;
-    
-    // Speak the shape name
-    window.speechSynthesis.speak(utterance);
+    try {
+      // Use the browser's built-in speech synthesis
+      const utterance = new window.SpeechSynthesisUtterance(fullText);
+      
+      // Configure speech settings for better comprehension
+      utterance.rate = 0.7;  // Slightly slower
+      utterance.pitch = 1;   // Normal pitch
+      utterance.volume = 1;  // Full volume
+      
+      // Some voices are better for children, try to find one
+      const voices = window.speechSynthesis.getVoices();
+      const preferredVoice = voices.find(voice => 
+        voice.name.includes('Female') || 
+        voice.name.includes('Google') || 
+        voice.name.includes('Samantha')
+      );
+      
+      if (preferredVoice) {
+        utterance.voice = preferredVoice;
+      }
+      
+      // Speak the text
+      window.speechSynthesis.speak(utterance);
+      console.log('✓ Speech started');
+      
+      // Return successfully
+      return true;
+    } catch (error) {
+      console.error('❌ Error with speech synthesis:', error);
+      return false;
+    }
   };
 
   // --- Game Logic ---
@@ -93,8 +118,9 @@ export default function ShapesGamePage() {
     setUsedShapes(prev => [...prev, newShape]);
     setCorrectShape(newShape);
     
-    // Speak the shape name
-    speakShapeName(newShape);
+    // Speak the shape name with loading state
+    setIsSpeaking(true);
+    speakShapeName(newShape).finally(() => setIsSpeaking(false));
 
     // Set transition timer
     const timer = setTimeout(() => {
@@ -116,7 +142,10 @@ export default function ShapesGamePage() {
     setScore(s => correct ? s + 1 : s);
     setGameState('result');
 
-    if (correct) speakShapeName(selected);
+    if (correct) {
+      setIsSpeaking(true);
+      speakShapeName(selected).finally(() => setIsSpeaking(false));
+    }
 
     setTimeout(() => {
       if (level >= MAX_LEVEL) setGameState('gameOver');
@@ -134,7 +163,7 @@ export default function ShapesGamePage() {
 
   // --- Render ---
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-purple-300 to-purple-100 p-4 overflow-hidden touch-manipulation relative">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-purple-300 to-purple-100 p-4 overflow-hidden touch-manipulation relative dynamic-container">
       {/* Decorative background elements */}
       <div className="absolute top-5 left-5 w-16 h-16 bg-yellow-200 rounded-full opacity-60 animate-wobble"></div>
       <div className="absolute top-20 right-10 w-12 h-12 bg-pink-200 rounded-full opacity-60 animate-float" style={{ animationDuration: '3s' }}></div>
@@ -143,13 +172,13 @@ export default function ShapesGamePage() {
       <div className="absolute bottom-1/3 left-1/4 text-3xl animate-float" style={{ animationDuration: '7s', animationDelay: '0.5s' }}>■</div>
       <div className="absolute bottom-20 right-5 w-10 h-10 bg-green-200 rounded-full opacity-60 animate-wobble" style={{ animationDuration: '3.5s' }}></div>
       {/* Game Header */}
-      <div className="w-full max-w-md flex justify-between mb-8 p-5 bg-white/70 rounded-xl shadow-md backdrop-blur-sm border-2 border-purple-200 z-10">
+      <div className="w-full max-w-md flex justify-between mb-8 p-5 bg-white/70 rounded-xl shadow-md backdrop-blur-sm border-2 border-purple-200 z-10 dynamic-scale">
         <span className="text-purple-800 font-bold text-xl sm:text-2xl">Level: {Math.min(level, MAX_LEVEL)}/{MAX_LEVEL}</span>
         <span className="text-yellow-800 font-bold text-xl sm:text-2xl">Score: {score}</span>
       </div>
 
       {/* Game States */}
-      <div className="w-full max-w-md bg-white/90 backdrop-blur-sm p-6 sm:p-8 rounded-xl shadow-xl border-2 border-purple-200">
+      <div className="w-full max-w-md bg-white/90 backdrop-blur-sm p-6 sm:p-8 rounded-xl shadow-xl border-2 border-purple-200 dynamic-scale">
         <h1 className="text-3xl font-bold text-center mb-8 text-purple-800 text-shadow">Shapes Memory Game</h1>
 
         {gameState === 'memorizing' && correctShape && (
@@ -159,8 +188,9 @@ export default function ShapesGamePage() {
               <Image
                 src={`/shape_images/${correctShape}.svg`}
                 alt={correctShape}
-                width={240}
-                height={240}
+                width={220}
+                height={220}
+                sizes="(max-width: 640px) 180px, 220px"
                 className="object-contain rounded-lg"
                 priority
               />
@@ -172,19 +202,20 @@ export default function ShapesGamePage() {
         {gameState === 'quiz' && (
           <div className="text-center">
             <h2 className="text-blue-700 text-2xl mb-6 animate-fadeIn text-shadow">Which shape was it?</h2>
-            <div className={`grid gap-6 ${quizOptions.length === 3 ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-1 sm:grid-cols-2'}`}>
+            <div className={`grid gap-4 sm:gap-6 ${quizOptions.length === 3 ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-2 sm:grid-cols-2'}`}>
               {quizOptions.map((shape, index) => (
                 <button
                   key={shape}
                   onClick={() => handleSelection(shape)}
-                  className="bg-white p-5 rounded-xl shadow-md hover:shadow-xl active:shadow-inner transition-all duration-300 transform hover:scale-110 active:scale-95 hover:rotate-2 animate-fadeIn flex items-center justify-center min-h-[160px] touch-manipulation"
+                  className="bg-white p-5 rounded-xl shadow-md hover:shadow-xl active:shadow-inner transition-all duration-300 transform hover:scale-110 active:scale-95 hover:rotate-2 animate-fadeIn flex items-center justify-center min-h-[160px] touch-manipulation ripple answer-ripple"
                   style={{ animationDelay: `${index * 150}ms` }}
                 >
                   <Image
                     src={`/shape_images/${shape}.svg`}
                     alt={shape}
-                    width={220}
-                    height={220}
+                    width={120}
+                    height={120}
+                    sizes="(max-width: 640px) 90px, 120px"
                     className="object-contain rounded-lg"
                   />
                 </button>
@@ -210,10 +241,14 @@ export default function ShapesGamePage() {
                 {correctShape}
               </p>
               <button 
-                onClick={() => speakShapeName(correctShape)} 
-                className="block mx-auto mt-4 bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 active:bg-blue-700 transition-colors touch-manipulation min-w-[120px] text-lg"
+                onClick={() => {
+                  setIsSpeaking(true);
+                  speakShapeName(correctShape).finally(() => setIsSpeaking(false));
+                }} 
+                className="block mx-auto mt-4 bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 active:bg-blue-700 transition-colors touch-manipulation min-w-[120px] text-lg ripple"
+                disabled={isSpeaking}
               >
-                Say it again
+                {isSpeaking ? 'Speaking...' : 'Say it again'}
               </button>
             </div>
           </div>
@@ -228,14 +263,14 @@ export default function ShapesGamePage() {
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
               <Button 
                 onClick={restart} 
-                className="bg-green-500 hover:bg-green-600 active:bg-green-700 text-white text-lg px-6 py-4 rounded-full transform transition-all duration-300 hover:scale-110 active:scale-95 min-w-[160px] min-h-[60px] touch-manipulation"
+                className="bg-green-500 hover:bg-green-600 active:bg-green-700 text-white text-lg px-6 py-4 rounded-full transform transition-all duration-300 hover:scale-110 active:scale-95 min-w-[160px] min-h-[60px] touch-manipulation ripple"
               >
                 Play Again
               </Button>
               <Button 
                 variant="outline" 
                 onClick={() => router.push('/')} 
-                className="text-lg px-6 py-4 rounded-full transform transition-all duration-300 hover:scale-110 active:scale-95 min-w-[160px] min-h-[60px] touch-manipulation"
+                className="text-lg px-6 py-4 rounded-full transform transition-all duration-300 hover:scale-110 active:scale-95 min-w-[160px] min-h-[60px] touch-manipulation ripple"
               >
                 Main Menu
               </Button>
