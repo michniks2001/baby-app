@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button"; 
 import { useRouter } from 'next/navigation'; 
+import TextToSpeech from '@/components/TextToSpeech';
 
 export default function Home() {
   const router = useRouter(); 

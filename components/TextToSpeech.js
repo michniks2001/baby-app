@@ -5,15 +5,47 @@ import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { Volume2, VolumeX } from 'lucide-react';
 
-export function TextToSpeech() {
+export default function TextToSpeech() {
   const [text, setText] = useState('');
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [speech, setSpeech] = useState<SpeechSynthesisUtterance | null>(null);
+  const [speech, setSpeech] = useState(null);
 
   useEffect(() => {
-    // Initialize speech synthesis
-    const speechSynthesis = window.speechSynthesis;
-    const utterance = new SpeechSynthesisUtterance();
+    // Make sure we're in the browser environment
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      // Initialize speech synthesis
+      const speechSynthesis = window.speechSynthesis;
+      const utterance = new window.SpeechSynthesisUtterance();
+      
+      // Configure speech settings
+      utterance.rate = 1;
+      utterance.pitch = 1;
+      utterance.volume = 1;
+      
+      // Set up event listeners
+      utterance.onstart = () => setIsSpeaking(true);
+      utterance.onend = () => setIsSpeaking(false);
+      utterance.onerror = () => setIsSpeaking(false);
+      
+      setSpeech(utterance);
+
+      // Cleanup
+      return () => {
+        speechSynthesis.cancel();
+      };
+    }
+  }, []);
+
+  const handleSpeak = () => {
+    if (!text || typeof window === 'undefined') return;
+    
+    // Cancel any ongoing speech first
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+    
+    // Create a fresh utterance each time to avoid issues
+    const utterance = new window.SpeechSynthesisUtterance(text);
     
     // Configure speech settings
     utterance.rate = 1;
@@ -25,25 +57,14 @@ export function TextToSpeech() {
     utterance.onend = () => setIsSpeaking(false);
     utterance.onerror = () => setIsSpeaking(false);
     
-    setSpeech(utterance);
-
-    // Cleanup
-    return () => {
-      speechSynthesis.cancel();
-    };
-  }, []);
-
-  const handleSpeak = () => {
-    if (!text) return;
-    
-    if (speech) {
-      speech.text = text;
-      window.speechSynthesis.speak(speech);
-    }
+    // Speak the text
+    window.speechSynthesis.speak(utterance);
   };
 
   const handleStop = () => {
-    window.speechSynthesis.cancel();
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
   };
 
   return (
