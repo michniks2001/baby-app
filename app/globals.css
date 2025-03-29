@@ -119,4 +119,53 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Custom animations for baby app */
+  @keyframes float {
+    0% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    25% {
+      transform: translateY(-10px) rotate(5deg);
+    }
+    50% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    75% {
+      transform: translateY(10px) rotate(-5deg);
+    }
+    100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+  }
+
+  @keyframes wobble {
+    0% {
+      transform: scale(1) rotate(0deg);
+    }
+    25% {
+      transform: scale(1.05) rotate(5deg);
+    }
+    50% {
+      transform: scale(1) rotate(0deg);
+    }
+    75% {
+      transform: scale(1.05) rotate(-5deg);
+    }
+    100% {
+      transform: scale(1) rotate(0deg);
+    }
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-wobble {
+    animation: wobble 4s ease-in-out infinite;
+  }
+
+  .text-shadow {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  }
 }

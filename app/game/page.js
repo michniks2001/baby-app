@@ -125,11 +125,24 @@ export default function GamePage() {
 
   // --- Render ---
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-green-200 to-green-100 p-4 overflow-hidden">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-green-300 to-green-100 p-4 overflow-hidden touch-manipulation relative">
+      {/* Decorative background elements - animal-themed */}
+      <div className="absolute top-10 left-10 w-16 h-16 bg-yellow-200 rounded-full opacity-60 flex items-center justify-center animate-wobble">
+        <span className="text-2xl">🐰</span>
+      </div>
+      <div className="absolute top-20 right-12 w-14 h-14 bg-blue-200 rounded-full opacity-60 flex items-center justify-center animate-bounce" style={{ animationDuration: '3s' }}>
+        <span className="text-2xl">🐶</span>
+      </div>
+      <div className="absolute bottom-16 left-14 w-14 h-14 bg-red-200 rounded-full opacity-60 flex items-center justify-center animate-bounce" style={{ animationDuration: '4s' }}>
+        <span className="text-2xl">🐱</span>
+      </div>
+      <div className="absolute bottom-24 right-8 w-12 h-12 bg-orange-200 rounded-full opacity-60 flex items-center justify-center animate-wobble" style={{ animationDuration: '3.5s' }}>
+        <span className="text-2xl">🐮</span>
+      </div>
       {/* Game Header */}
-      <div className="w-full max-w-md flex justify-between mb-8 p-4 bg-white/60 rounded-xl shadow-md backdrop-blur-sm">
-        <span className="text-green-800 font-bold text-xl">Level: {Math.min(level, MAX_LEVEL)}/{MAX_LEVEL}</span>
-        <span className="text-yellow-800 font-bold text-xl">Score: {score}</span>
+      <div className="w-full max-w-md flex justify-between mb-8 p-5 bg-white/70 rounded-xl shadow-md backdrop-blur-sm border-2 border-green-200 z-10">
+        <span className="text-green-800 font-bold text-xl sm:text-2xl">Level: {Math.min(level, MAX_LEVEL)}/{MAX_LEVEL}</span>
+        <span className="text-yellow-800 font-bold text-xl sm:text-2xl">Score: {score}</span>
       </div>
 
       {/* Game States */}
@@ -140,37 +153,37 @@ export default function GamePage() {
 
         {gameState === 'memorizing' && correctAnimal && (
           <div className="text-center">
-            <h2 className="text-blue-700 text-xl mb-4 animate-bounce">Remember this animal!</h2>
-            <div className="bg-white p-6 rounded-xl shadow-lg transform transition-all duration-500 hover:scale-105 animate-fadeIn">
+            <h2 className="text-blue-700 text-2xl mb-6 animate-float text-shadow">Remember this animal!</h2>
+            <div className="bg-white p-6 rounded-xl shadow-lg transform transition-all duration-500 hover:scale-105 animate-fadeIn touch-none">
               <Image
                 src={`/animal_images/${correctAnimal}.jpg`}
                 alt={correctAnimal}
-                width={300}
-                height={300}
+                width={320}
+                height={320}
                 className="object-cover rounded-lg"
                 priority
               />
             </div>
-            <p className="text-gray-500 mt-4 italic animate-pulse">Listen carefully...</p>
+            <p className="text-gray-500 mt-6 italic animate-pulse text-lg">Listen carefully...</p>
           </div>
         )}
 
         {gameState === 'quiz' && (
           <div className="text-center">
-            <h2 className="text-blue-700 text-xl mb-6 animate-fadeIn">Which animal was it?</h2>
-            <div className={`grid gap-6 ${quizOptions.length === 3 ? 'grid-cols-3' : 'grid-cols-2 sm:grid-cols-2'}`}>
+            <h2 className="text-blue-700 text-2xl mb-6 animate-fadeIn text-shadow">Which animal was it?</h2>
+            <div className={`grid gap-8 ${quizOptions.length === 3 ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-1 sm:grid-cols-2'}`}>
               {quizOptions.map((animal, index) => (
                 <button
                   key={animal}
                   onClick={() => handleSelection(animal)}
-                  className="bg-white p-4 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-110 hover:rotate-2 animate-fadeIn"
+                  className="bg-white p-4 rounded-xl shadow-md hover:shadow-xl active:shadow-inner transition-all duration-300 transform hover:scale-110 active:scale-95 hover:rotate-2 animate-fadeIn min-h-[120px] touch-manipulation"
                   style={{ animationDelay: `${index * 150}ms` }}
                 >
                   <Image
                     src={`/animal_images/${animal}.jpg`}
                     alt={animal}
-                    width={150}
-                    height={150}
+                    width={180}
+                    height={180}
                     className="object-cover rounded-lg"
                   />
                 </button>
@@ -181,15 +194,15 @@ export default function GamePage() {
 
         {gameState === 'result' && (
           <div className={`text-center ${resultMessage.includes('Correct') ? 'text-green-600' : 'text-red-600'} animate-fadeIn`}>
-            <p className="text-3xl font-bold animate-bounce">{resultMessage}</p>
+            <p className="text-3xl font-bold animate-wobble mb-4 text-shadow">{resultMessage}</p>
             
             {/* Show animal image and name */}
             <div className="mt-6 transform transition-all duration-500 animate-fadeIn">
               <Image
                 src={`/animal_images/${correctAnimal}.jpg`}
                 alt={correctAnimal}
-                width={150}
-                height={150}
+                width={180}
+                height={180}
                 className="mx-auto rounded-lg shadow-lg mb-3"
               />
               <p className="text-2xl font-bold capitalize bg-white/80 py-2 px-4 rounded-lg inline-block mt-2 text-blue-800">
@@ -201,21 +214,21 @@ export default function GamePage() {
 
         {gameState === 'gameOver' && (
           <div className="text-center bg-white p-8 rounded-xl shadow-2xl animate-fadeIn transform transition-all duration-500">
-            <h2 className="text-purple-700 text-3xl font-bold mb-6 animate-bounce">Game Over!</h2>
+            <h2 className="text-purple-700 text-3xl font-bold mb-6 animate-float text-shadow">Game Over!</h2>
             <div className="mb-8 bg-yellow-100 p-4 rounded-lg inline-block">
               <p className="text-2xl">Final Score: <span className="font-bold text-yellow-600">{score}</span>/{MAX_LEVEL}</p>
             </div>
             <div className="flex gap-6 justify-center">
               <Button 
                 onClick={restart} 
-                className="bg-green-500 hover:bg-green-600 text-white text-lg px-6 py-4 rounded-full transform transition-all duration-300 hover:scale-110"
+                className="bg-green-500 hover:bg-green-600 active:bg-green-700 text-white text-lg px-8 py-5 rounded-full transform transition-all duration-300 hover:scale-110 active:scale-95 min-w-[180px] min-h-[70px] touch-manipulation"
               >
                 Play Again
               </Button>
               <Button 
                 variant="outline" 
                 onClick={() => router.push('/')} 
-                className="text-lg px-6 py-4 rounded-full transform transition-all duration-300 hover:scale-110"
+                className="text-lg px-8 py-5 rounded-full transform transition-all duration-300 hover:scale-110 active:scale-95 min-w-[180px] min-h-[70px] touch-manipulation"
               >
                 Main Menu
               </Button>
