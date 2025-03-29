@@ -51,6 +51,11 @@ export default function Home() {
         Start Playing!
       </Button>
 
+      {/* Text to Speech Section */}
+      <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg p-6">
+        <TextToSpeech />
+      </div>
+
     </div>
   );
 }
