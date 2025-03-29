@@ -45,6 +45,7 @@ export default function Home() {
       <Button 
         size="lg" 
         className="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 font-bold text-xl px-10 py-7 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+        onClick={handleStartClick}
       >
         Start Playing!
       </Button>
